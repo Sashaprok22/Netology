@@ -7,6 +7,27 @@ class Student:
         self.courses_in_progress = []
         self.grades = {}
 
+    def __str__(self):
+        rows = [
+            f"Имя: {self.name}",
+            f"Фамилия: {self.surname}",
+            f"Средняя оценка за домашние задания: {self.get_averge_rate()}",
+            f"Курсы в процессе изучения: {', '.join(self.courses_in_progress)}",
+            f"Завершенные курсы: {', '.join(self.finished_courses)}",
+
+        ]
+        return "\n".join(rows)
+
+    def get_averge_rate(self):
+        rates_count = 0
+        rates_sum = 0
+
+        for grades in self.grades.values():
+            rates_count += len(grades)
+            rates_sum += sum(grades)
+
+        return rates_sum / rates_count if rates_count > 0 else "N/A"
+
     def rate_lecture(self, lecturer, course, grade):
         if isinstance(lecturer, Lecturer) and course in self.courses_in_progress and course in lecturer.courses_attached:
             if course in lecturer.courses_grades:
@@ -27,7 +48,24 @@ class Lecturer(Mentor):
         super().__init__(name, surname)
         self.courses_grades = {}
 
+    def __str__(self):
+        return f"Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за лекции: {self.get_averge_rate()}"
+
+    def get_averge_rate(self):
+        rates_count = 0
+        rates_sum = 0
+
+        for grades in self.courses_grades.values():
+            rates_count += len(grades)
+            rates_sum += sum(grades)
+
+        return rates_sum / rates_count if rates_count > 0 else "N/A"
+
+
 class Reviewer(Mentor):
+    def __str__(self):
+        return f"Имя: {self.name}\nФамилия: {self.surname}"
+
     def rate_hw(self, student, course, grade):
         if isinstance(student, Student) and course in self.courses_attached and course in student.courses_in_progress:
             if course in student.grades:
@@ -41,11 +79,16 @@ class Reviewer(Mentor):
 best_student = Student('Ruoy', 'Eman', 'your_gender')
 best_student.courses_in_progress += ['Python']
  
-cool_mentor = Mentor('Some', 'Buddy')
+cool_mentor = Reviewer('Some', 'Buddy')
 cool_mentor.courses_attached += ['Python']
  
 cool_mentor.rate_hw(best_student, 'Python', 10)
 cool_mentor.rate_hw(best_student, 'Python', 10)
 cool_mentor.rate_hw(best_student, 'Python', 10)
+
+lecturer = Lecturer("Name", "Surname")
+lecturer.courses_attached += ['Python']
+
+best_student.rate_lecture(lecturer, "Python", 7)
  
-print(best_student.grades)
+print(best_student)
