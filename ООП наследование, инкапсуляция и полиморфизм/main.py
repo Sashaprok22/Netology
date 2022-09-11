@@ -26,15 +26,20 @@ class Student:
         if isinstance(student, Student):
             return self.get_averge_rate() == student.get_averge_rate()
 
-    def get_averge_rate(self):
+    def get_averge_rate(self, course=None):
         rates_count = 0
         rates_sum = 0
 
-        for grades in self.grades.values():
-            rates_count += len(grades)
-            rates_sum += sum(grades)
+        for c_course, grades in self.grades.items():
+            if course is not None:
+                if course == c_course:
+                    rates_count += len(grades)
+                    rates_sum += sum(grades)
+            else:
+                rates_count += len(grades)
+                rates_sum += sum(grades)
 
-        return rates_sum / rates_count if rates_count > 0 else "N/A"
+        return rates_sum / rates_count if rates_count > 0 else 0
 
     def rate_lecture(self, lecturer, course, grade):
         if isinstance(lecturer, Lecturer) and course in self.courses_in_progress and course in lecturer.courses_attached:
@@ -67,15 +72,20 @@ class Lecturer(Mentor):
         if isinstance(lecturer, Lecturer):
             return self.get_averge_rate() == lecturer.get_averge_rate()
 
-    def get_averge_rate(self):
+    def get_averge_rate(self, course=None):
         rates_count = 0
         rates_sum = 0
 
-        for grades in self.courses_grades.values():
-            rates_count += len(grades)
-            rates_sum += sum(grades)
+        for c_course, grades in self.courses_grades.items():
+            if course is not None:
+                if course == c_course:
+                    rates_count += len(grades)
+                    rates_sum += sum(grades)
+            else:
+                rates_count += len(grades)
+                rates_sum += sum(grades)
 
-        return rates_sum / rates_count if rates_count > 0 else "N/A"
+        return rates_sum / rates_count if rates_count > 0 else 0
 
 
 class Reviewer(Mentor):
@@ -92,26 +102,59 @@ class Reviewer(Mentor):
             return 'Ошибка'
 
  
-best_student = Student('Ruoy', 'Eman', 'your_gender')
-best_student.courses_in_progress += ['Python']
- 
-cool_mentor = Reviewer('Some', 'Buddy')
-cool_mentor.courses_attached += ['Python']
- 
-cool_mentor.rate_hw(best_student, 'Python', 10)
-cool_mentor.rate_hw(best_student, 'Python', 10)
-cool_mentor.rate_hw(best_student, 'Python', 10)
+lecturer1 = Lecturer("Lecturer", "1")
+lecturer1.courses_attached += ["Python"]
 
-lecturer = Lecturer("Name", "Surname")
-lecturer.courses_attached += ['Python']
+lecturer2 = Lecturer("Lecturer", "2")
+lecturer2.courses_attached += ["Python"]
 
-best_student.rate_lecture(lecturer, "Python", 7)
+reviewer = Reviewer("Reviewer", "1")
+reviewer.courses_attached += ["Python"]
 
-student = Student('1', '2', 'your_gender')
-student.courses_in_progress += ['Python']
- 
-cool_mentor.rate_hw(student, 'Python', 7)
-cool_mentor.rate_hw(student, 'Python', 6)
-cool_mentor.rate_hw(student, 'Python', 10)
- 
-print(lecturer == lecturer)
+student1 = Student("Student", "1", "gender")
+student1.courses_in_progress += ["Python"]
+
+student2 = Student("Student", "2", "gender")
+student2.courses_in_progress += ["Python"]
+
+reviewer.rate_hw(student1, "Python", 3)
+reviewer.rate_hw(student1, "Python", 6)
+
+reviewer.rate_hw(student2, "Python", 7)
+reviewer.rate_hw(student2, "Python", 2)
+
+student1.rate_lecture(lecturer1, "Python", 5)
+student1.rate_lecture(lecturer2, "Python", 10)
+
+student2.rate_lecture(lecturer2, "Python", 1)
+student2.rate_lecture(lecturer1, "Python", 5)
+
+print(lecturer1)
+print(reviewer)
+print(student1)
+
+print(lecturer1 > lecturer2)
+print(student1 < student2)
+
+def get_students_averge_rate(students, course):
+    rates_sum = 0
+    rates_count = 0
+
+    for student in students:
+        rates_count += 1
+        rates_sum += student.get_averge_rate(course)
+
+    return rates_sum / rates_count if rates_count > 0 else 0
+
+def get_lecturers_averge_rate(lecturers, course): # Абсолютно идентичная функция с предыдущей)
+    rates_sum = 0
+    rates_count = 0
+
+    for lecturer in lecturers:
+        rates_count += 1
+        rates_sum += lecturer.get_averge_rate(course)
+
+    return rates_sum / rates_count if rates_count > 0 else 0
+
+print(get_students_averge_rate([student1, student2], "Python"))
+print(get_lecturers_averge_rate([lecturer1, lecturer2], "Python"))
