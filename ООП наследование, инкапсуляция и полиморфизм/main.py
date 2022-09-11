@@ -18,6 +18,14 @@ class Student:
         ]
         return "\n".join(rows)
 
+    def __lt__(self, student):
+        if isinstance(student, Student):
+            return self.get_averge_rate() < student.get_averge_rate()
+
+    def __eq__(self, student):
+        if isinstance(student, Student):
+            return self.get_averge_rate() == student.get_averge_rate()
+
     def get_averge_rate(self):
         rates_count = 0
         rates_sum = 0
@@ -50,6 +58,14 @@ class Lecturer(Mentor):
 
     def __str__(self):
         return f"Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за лекции: {self.get_averge_rate()}"
+    
+    def __lt__(self, lecturer):
+        if isinstance(lecturer, Lecturer):
+            return self.get_averge_rate() < lecturer.get_averge_rate()
+
+    def __eq__(self, lecturer):
+        if isinstance(lecturer, Lecturer):
+            return self.get_averge_rate() == lecturer.get_averge_rate()
 
     def get_averge_rate(self):
         rates_count = 0
@@ -90,5 +106,12 @@ lecturer = Lecturer("Name", "Surname")
 lecturer.courses_attached += ['Python']
 
 best_student.rate_lecture(lecturer, "Python", 7)
+
+student = Student('1', '2', 'your_gender')
+student.courses_in_progress += ['Python']
  
-print(best_student)
+cool_mentor.rate_hw(student, 'Python', 7)
+cool_mentor.rate_hw(student, 'Python', 6)
+cool_mentor.rate_hw(student, 'Python', 10)
+ 
+print(lecturer == lecturer)
