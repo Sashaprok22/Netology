@@ -1,0 +1,12 @@
+files/3.txt
+1
+f 3 s 1
+files/1.txt
+2
+f 1 s 1
+f 1 s 2
+files/2.txt
+3
+f 2 s 1
+f 2 s 2
+f 2 s 3
