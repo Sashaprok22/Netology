@@ -3,7 +3,8 @@ JOIN authorsgenres a on genres.genre_id = a.genre
 GROUP BY name;
 
 SELECT COUNT(*) FROM tracks
-WHERE (SELECT relese_year FROM albums WHERE album_id = album) BETWEEN 2019 AND 2020;
+JOIN albums ON albums.album_id = tracks.album
+WHERE relese_year BETWEEN 2019 AND 2020;
 
 SELECT albums.name, AVG(duration) FROM albums
 JOIN tracks ON albums.album_id = tracks.album
@@ -16,61 +17,35 @@ WHERE 2020 NOT IN (
     WHERE author = authors.author_id
 );
 
-SELECT a.name FROM authorsalbums aa
-JOIN (
-    SELECT b.name, albums.album_id FROM albums
-    JOIN (
-        SELECT d.name, album FROM tracks
-        JOIN (
-            SELECT c.name, collection, track FROM trackscollections
-            JOIN collections c ON c.collection_id = collection
-        ) d ON d.track = track_id
-    ) b ON b.album = albums.album_id
-) a ON a.album_id = aa.album
+SELECT collections.name FROM authorsalbums aa
+JOIN albums ON aa.album = albums.album_id
+JOIN tracks ON albums.album_id = tracks.album
+JOIN trackscollections tc ON tracks.track_id = tc.track
+JOIN collections ON tc.collection = collections.collection_id
 WHERE aa.author = 2;
 
-SELECT a.name FROM genres
-JOIN (
-    SELECT b.name, genre FROM authorsgenres
-    JOIN (
-        SELECT c.name, author_id FROM authors
-        JOIN (
-            SELECT name, author FROM authorsalbums
-            JOIN albums ON album_id = album
-        ) c ON c.author = author_id
-    ) b ON b.author_id = author
-) a ON a.genre = genre_id
-GROUP BY a.name
+SELECT albums.name FROM genres
+JOIN authorsgenres ag ON genres.genre_id = ag.genre
+JOIN authorsalbums aa ON ag.author = aa.author
+JOIN albums on aa.album = albums.album_id
+GROUP BY albums.name
 HAVING COUNT(genre) > 1;
 
 SELECT name FROM tracks
-WHERE (
-    SELECT COUNT(*) FROM trackscollections
-    WHERE track = tracks.track_id
-) < 1;
+LEFT JOIN trackscollections tc ON tracks.track_id = tc.track
+WHERE collection IS NULL;
 
-SELECT a.nick FROM tracks
-JOIN (
-    SELECT b.nick, album_id FROM albums
-    JOIN (
-        SELECT nick, album FROM authorsalbums
-        JOIN authors ON author_id = author
-    ) b ON b.album = album_id
-) a ON a.album_id = album
+SELECT nick FROM tracks
+JOIN albums ON tracks.album = albums.album_id
+JOIN authorsalbums aa on albums.album_id = aa.album
+JOIN authors on aa.author = authors.author_id
 WHERE duration = (SELECT MIN(duration) FROM tracks);
 
-SELECT name FROM albums
-WHERE album_id IN (
-    SELECT album FROM (
-        SELECT album, COUNT(*) FROM tracks
-        GROUP BY album
-    ) a
-    WHERE a.count = (
-        SELECT MIN(a.count) FROM (
-            SELECT album, COUNT(*) FROM tracks
-            GROUP BY album
-        ) a
-));
-
-
-
+SELECT albums.name FROM albums
+JOIN tracks ON albums.album_id = tracks.album
+GROUP BY albums.name
+HAVING COUNT(*) = (SELECT MIN(a.count) FROM (
+    SELECT album, COUNT(*) FROM tracks
+    GROUP BY album
+) a
+);
