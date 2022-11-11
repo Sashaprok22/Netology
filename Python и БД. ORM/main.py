@@ -74,11 +74,11 @@ session.add_all([publisher1, publisher2, book, shop, stock, sale])
 session.commit()
 
 publisher_info = input()
-if publisher_info.isdigit():
-    searched_publisher = session.query(Publisher).filter(Publisher.id == int(publisher_info)).one_or_none()
-else:
-    searched_publisher = session.query(Publisher).filter(Publisher.name == publisher_info).one_or_none()
+pub_filter = Publisher.id == int(publisher_info) if publisher_info.isdigit() else Publisher.name == publisher_info
 
-print(searched_publisher)
+q = session.query(Publisher, Book, Stock, Shop, Sale).select_from(Publisher).join(Book).join(Stock).join(Shop, Stock.id_shop == Shop.id).join(Sale).filter(pub_filter)
+for s in q:
+    publisher, book, stock, shop, sale = s
+    print(f"{book.title} | {shop.name} | {sale.price} | {sale.date_sale}")
 
 session.close()
