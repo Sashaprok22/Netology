@@ -11,11 +11,9 @@ JOIN tracks ON albums.album_id = tracks.album
 GROUP BY albums.name;
 
 SELECT nick FROM authors
-WHERE 2020 NOT IN (
-    SELECT relese_year FROM albums
-    JOIN authorsalbums a on albums.album_id = a.album
-    WHERE author = authors.author_id
-);
+JOIN authorsalbums aa ON authors.author_id = aa.author
+JOIN albums ON aa.album = albums.album_id
+WHERE relese_year != 2020;
 
 SELECT collections.name FROM authorsalbums aa
 JOIN albums ON aa.album = albums.album_id
