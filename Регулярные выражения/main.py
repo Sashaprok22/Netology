@@ -1,18 +1,58 @@
-from pprint import pprint
-# читаем адресную книгу в формате CSV в список contacts_list
 import csv
-with open("phonebook_raw.csv") as f:
-  rows = csv.reader(f, delimiter=",")
-  print(list(rows))
-  contacts_list = []
-pprint(contacts_list)
+import re
 
-# TODO 1: выполните пункты 1-3 ДЗ
-# ваш код
+phone_pattern = re.compile(r"^(\+7|8)\D*(\d{3})\D*(\d{3})\D*(\d{2})\D*(\d{2})\D*(\d{4})?.*")
+def format_phone(phone):
+  nums = phone_pattern.match(phone)
+  if nums.groups()[5]:
+    phone = phone_pattern.sub(r"+7(\2)\3-\4-\5 доб.\6", phone)
+  else:
+    phone = phone_pattern.sub(r"+7(\2)\3-\4-\5", phone)
 
-# TODO 2: сохраните получившиеся данные в другой файл
-# код для записи файла в формате CSV
-with open("phonebook.csv", "w") as f:
-  datawriter = csv.writer(f, delimiter=',')
-  # Вместо contacts_list подставьте свой список
-  datawriter.writerows(contacts_list)
+  return phone
+
+with open("phonebook_raw.csv", "r", encoding="utf8") as f:
+  contacts_list = list(csv.reader(f, delimiter=","))
+
+contacts_info = {}
+for contact in contacts_list[1:]:
+  lastname, firstname, surname, organization, position, phone, email = contact
+  name = re.findall(r"([(А-Я][а-я]+)", lastname+firstname+surname)
+
+  if len(name) < 2: continue
+
+  contacts_info.setdefault(name[0]+name[1], {})
+  contact_info = contacts_info.get(name[0]+name[1])
+
+  contact_info["lastname"] = name[0]
+  contact_info["firstname"] = name[1]
+
+  if len(name) > 2 and not contact_info.get("surname"):
+    contact_info["surname"] = name[2]
+
+  if organization and not contact_info.get("organization"):
+    contact_info["organization"] = organization
+
+  if position and not contact_info.get("position"):
+    contact_info["position"] = position
+
+  if phone and not contact_info.get("phone"):
+    contact_info["phone"] = format_phone(phone)
+
+  if email and not contact_info.get("email"):
+    contact_info["email"] = email
+
+contacts_list = [contacts_list[0]]
+for contact in contacts_info.values():
+  contacts_list.append([
+    contact.get("lastname"),
+    contact.get("firstname"),
+    contact.get("surname"),
+    contact.get("organization"),
+    contact.get("position"),
+    contact.get("phone"),
+    contact.get("email"),
+  ])
+
+with open("phonebook.csv", "w", encoding="utf8") as f:
+  csv.writer(f, delimiter=',').writerows(contacts_list)
