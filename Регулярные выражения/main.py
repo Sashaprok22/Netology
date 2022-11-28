@@ -16,7 +16,7 @@ with open("phonebook_raw.csv", "r", encoding="utf8") as f:
 
 contacts_info = {}
 for contact in contacts_list[1:]:
-  lastname, firstname, surname, organization, position, phone, email = contact
+  lastname, firstname, surname, organization, position, phone, email = contact[:7]
   name = re.findall(r"([(А-Я][а-я]+)", lastname+firstname+surname)
 
   if len(name) < 2: continue
