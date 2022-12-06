@@ -3,7 +3,7 @@ import requests
 default_headers = {
     "Content-Type": "application/json",
     "Accept": "application/json",
-    "Authorization": "y0_AgAAAAAkqDJkAADLWwAAAADPa0r8h6YiCq4wQ6-6L8g8l7htA--0tsg"
+    "Authorization": "YANDEX TOKEN"
 }
 
 
