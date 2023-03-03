@@ -74,30 +74,20 @@ def test_courses_filter_by_name(client, courses_factory):
 
 @pytest.mark.django_db
 def test_create_course(client):
-    test_data = {
-        "name": "My Test Course",
-    }
+    courses_count = Course.objects.count()
 
-    response = client.post(f'/api/v1/courses/', data=test_data, format="json")
+    response = client.post(f'/api/v1/courses/', data={"name": "My Test Course"}, format="json")
+
     assert response.status_code == 201
-
-    response_json = response.json()
-    assert response_json.get("name") == test_data.get("name")
+    assert Course.objects.count() == courses_count + 1
 
 @pytest.mark.django_db
 def test_update_course(client, courses_factory):
     course = courses_factory()
 
-    test_data = {
-        "name": "Second name",
-    }
-
-    response = client.patch(f'/api/v1/courses/{course.id}/', data=test_data, format="json")
+    response = client.patch(f'/api/v1/courses/{course.id}/', data={"name": "Second name"}, format="json")
     assert response.status_code == 200
-
-    response_json = response.json()
-    assert course.id == response_json.get("id")
-    assert response_json.get("name") == test_data.get("name")
+    assert Course.objects.get(id=course.id).name == "Second name"
 
 @pytest.mark.django_db
 def test_delete_course(client, courses_factory):
@@ -105,3 +95,4 @@ def test_delete_course(client, courses_factory):
 
     response = client.delete(f'/api/v1/courses/{course.id}/')
     assert response.status_code == 204
+    assert not Course.objects.filter(id=course.id).exists()
