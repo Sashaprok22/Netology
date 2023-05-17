@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS Game</title>
+</head>
+<body>
+    <script>
+        while (true){
+            const hiddenNumber = Math.floor(Math.random() * 1000)
+
+            console.log(`Hidden number is ${hiddenNumber}`)
+
+            const userNumber = +prompt("Введите число (0 - 999):")
+
+            if (isNaN(userNumber) || userNumber < 0 || userNumber > 999 ) {
+                alert("Вы ввели некоректное значение")
+            } else if (userNumber === hiddenNumber ) {
+                alert("Вы угадали!")
+            } else if (hiddenNumber > userNumber) {
+                alert("Загаданное число больше")
+            } else if (hiddenNumber < userNumber) {
+                alert("Загаданное число меньше")
+            }
+        }
+
+    </script>
+</body>
+</html>
