@@ -10,4 +10,7 @@ const onCloseClick = function () {
 }
 for (button of document.querySelectorAll(".modal__close")) button.onclick = onCloseClick;
 
-document.querySelector(".show-success").onclick = () => modalSub.classList.add("modal_active");
+document.querySelector(".show-success").onclick = () => {
+    modalMain.classList.remove("modal_active");
+    modalSub.classList.add("modal_active");
+}
